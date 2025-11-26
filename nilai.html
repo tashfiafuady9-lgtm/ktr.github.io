@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nilai Akhir Mahasiswa</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e8f0fe; 
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #ff9ec7, #9ecbff); 
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            margin: 0 20px;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .nav-link:hover {
+            background: linear-gradient(
+                90deg, 
+                rgba(252, 178, 209, 0.5), 
+                rgba(174, 211, 254, 0.5)
+            );
+        }
+
+        .active {
+            border-bottom: 2px solid white;
+        }
+
+        .main-container {
+            padding: 30px 20px 70px 20px;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .card {
+            background: linear-gradient(
+                90deg, 
+                rgba(252, 178, 209, 0.5), 
+                rgba(174, 211, 254, 0.5)
+            );
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        
+        .btn-primary {
+            background-color: #ff71bf;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #faa4d3;
+        }
+        
+        #hasil-display {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border: 1px solid #cceeff;
+            border-radius: 8px;
+            font-size: 1.1em;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .footer {
+            background: linear-gradient(90deg, #ff9ec7, #9ecbff);
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" class="nav-link">Biodata</a>
+        <a href="nilai.html" class="nav-link active">Grade</a>
+    </div>
+
+    <div class="main-container">
+
+        <div class="card">
+            <h1 style="color: #f5a3d0; text-align: center;">Hitung Nilai Akhir</h1>
+            
+            <form id="form-nilai" onsubmit="return hitungNilaiAkhir(event)">
+                
+                <div class="form-group">
+                    <label for="matkul">Pilih Mata Kuliah:</label>
+                    <select id="matkul" required>
+                        <option value="">-- Pilih Mata Kuliah --</option>
+                        <option value="Algoritma Pemrograman">Algoritma Pemrograman</option>
+                        <option value="Pemrograman Web">Pemrograman Web</option>
+                        <option value="Jaringan Komputer">Jaringan Komputer</option>
+                        <option value="Machine Learning">Machine Learning</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tugas">Nilai Tugas (20%):</label>
+                    <input type="number" id="tugas" min="0" max="100" placeholder="Masukkan Nilai (0-100)" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="kuis">Nilai Kuis (15%):</label>
+                    <input type="number" id="kuis" min="0" max="100" placeholder="Masukkan Nilai (0-100)" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="uts">Nilai UTS (25%):</label>
+                    <input type="number" id="uts" min="0" max="100" placeholder="Masukkan Nilai (0-100)" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="uas">Nilai UAS (35%):</label>
+                    <input type="number" id="uas" min="0" max="100" placeholder="Masukkan Nilai (0-100)" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="absensi">Nilai Absensi (5%):</label>
+                    <input type="number" id="absensi" min="0" max="100" placeholder="Masukkan Nilai (0-100)" required>
+                </div>
+
+                <button type="submit" class="btn-primary">Hitung Nilai Akhir</button>
+            </form>
+
+            <div id="hasil-display" style="display: none;">
+                </div>
+            
+        </div>
+        
+    </div>
+
+    <div class="footer">
+        Tashfia Wahdah Fuady | 202431013
+    </div>
+
+
+    <script>
+        // JavaScript untuk Menghitung dan Menentukan Nilai Akhir
+        function hitungNilaiAkhir(event) {
+            event.preventDefault(); 
+            
+            // 1. Mengambil semua nilai input (pastikan diubah ke float)
+            const tugas = parseFloat(document.getElementById('tugas').value);
+            const kuis = parseFloat(document.getElementById('kuis').value);
+            const uts = parseFloat(document.getElementById('uts').value);
+            const uas = parseFloat(document.getElementById('uas').value);
+            const absensi = parseFloat(document.getElementById('absensi').value);
+            const matkul = document.getElementById('matkul').value;
+            
+            // Validasi sederhana
+            if (matkul === "") {
+                alert("Mohon pilih Mata Kuliah terlebih dahulu.");
+                return false;
+            }
+
+            // 2. Menghitung Nilai Akhir berdasarkan Bobot
+            // Bobot: Tugas(20%), Kuis(15%), UTS(25%), UAS(35%), Absensi(5%)
+            const NA = 
+                (tugas * 0.20) + 
+                (kuis * 0.15) + 
+                (uts * 0.25) + 
+                (uas * 0.35) + 
+                (absensi * 0.05);
+
+            // 3. Menentukan Nilai Huruf
+            let nilaiHuruf;
+            if (NA > 81) {
+                nilaiHuruf = 'A';
+            } else if (NA > 70) {
+                nilaiHuruf = 'B';
+            } else if (NA > 60) {
+                nilaiHuruf = 'C';
+            } else {
+                nilaiHuruf = 'D'; 
+            }
+
+            // 4. Menampilkan Hasil pada Halaman
+            const hasilDisplay = document.getElementById('hasil-display');
+            hasilDisplay.style.display = 'block';
+
+            hasilDisplay.innerHTML = `
+                <h4>Hasil Perhitungan Nilai</h4>
+                <p>Mata Kuliah: <strong>${matkul}</strong></p>
+                <p>Nilai Akhir (NA): <strong>${NA.toFixed(2)}</strong></p>
+                <p>Grade Anda: <strong style="color: ${nilaiHuruf === 'A' ? 'green' : nilaiHuruf === 'B' ? 'blue' : nilaiHuruf === 'C' ? 'orange' : 'red'};">${nilaiHuruf}</strong></p>
+            `;
+            
+            return false; // Mencegah form submit
+        }
+    </script>
+</body>
+</html>
